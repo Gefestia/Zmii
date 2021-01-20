@@ -8,7 +8,11 @@ x, y = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
 apple = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
 grusha = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
 trava = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
+grib = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
+mega_grib = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
+apelsin = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
 length = 1
+invert = 0
 snake = [(x, y)]
 score = 0
 speed_count=1
@@ -41,10 +45,13 @@ while True:
         for i, j in snake
     ]
     pygame.draw.rect(surface, pygame.Color("red"), (*apple, SIZE, SIZE))
+    pygame.draw.rect(surface, pygame.Color("purple"), (*mega_grib, SIZE, SIZE))
     pygame.draw.rect(surface, pygame.Color("green"), (*trava, SIZE, SIZE))
     pygame.draw.rect(surface, pygame.Color("yellow"), (*grusha, SIZE, SIZE))
-    render_score = font_score.render(f'Очки: {score}', 1, pygame.Color('purple'))
-    surface.blit(render_score, (5, 5))
+    pygame.draw.rect(surface, pygame.Color("brown"), (*grib, SIZE, SIZE))
+    pygame.draw.rect(surface, pygame.Color("orange"), (*apelsin, SIZE, SIZE))
+    vivod_score = font_score.render(f'Очки: {score}', 1, pygame.Color('purple'))
+    surface.blit(vivod_score, (5, 5))
 
     speed_count += 1
     if not speed_count % snake_speed:
@@ -60,6 +67,11 @@ while True:
         score += 10
         snake_speed = max(snake_speed, 4)
 
+    if snake[-1] == mega_grib:
+        mega_grib = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
+        invert = (invert + 1) % 2
+        score += 100
+
     if snake[-1] == trava:
         trava = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
         if length>1:
@@ -69,12 +81,27 @@ while True:
             length+=4
             score +=20
 
+    if snake[-1] == grib:
+        apple = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
+        grib = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
+        trava = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
+        grusha = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
+        score += 5
+
     if snake[-1] ==grusha:
         grusha = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
         length += 2
         score += 50
         snake_speed -= 3
-        snake_speed = max(snake_speed, 4)
+        snake_speed = max(snake_speed, 2)
+
+    if snake[-1] ==apelsin:
+        apelsin = randrange(SIZE, RES - SIZE, SIZE), randrange(SIZE, RES - SIZE, SIZE)
+        length += 1
+        if length <7:
+            score += 70
+        else:
+            score -=7
 
     if (
         x < 0
@@ -90,8 +117,9 @@ while True:
     close_game()
 
     key = pygame.key.get_pressed()
-    if key[pygame.K_w]:
-        if dirs["W"]:
+    if invert!=1:
+      if key[pygame.K_w]:
+          if dirs["W"]:
             dx, dy = 0, -1
             dirs = {
                 "W": True,
@@ -99,7 +127,7 @@ while True:
                 "A": True,
                 "D": True,
             }
-    elif key[pygame.K_s]:
+      elif key[pygame.K_s]:
         if dirs["S"]:
             dx, dy = 0, 1
             dirs = {
@@ -108,7 +136,7 @@ while True:
                 "A": True,
                 "D": True,
             }
-    elif key[pygame.K_a]:
+      elif key[pygame.K_a]:
         if dirs["A"]:
             dx, dy = -1, 0
             dirs = {
@@ -117,7 +145,7 @@ while True:
                 "A": True,
                 "D": False,
             }
-    elif key[pygame.K_d]:
+      elif key[pygame.K_d]:
         if dirs["D"]:
             dx, dy = 1, 0
             dirs = {
@@ -126,3 +154,41 @@ while True:
                 "A": False,
                 "D": True,
             }
+    else:
+        if key[pygame.K_w]:
+            if dirs["W"]:
+                dx, dy = 0, 1
+                dirs = {
+                    "W": True,
+                    "S": False,
+                    "A": True,
+                    "D": True,
+                }
+        elif key[pygame.K_s]:
+            if dirs["S"]:
+                dx, dy = 0,-1
+                dirs = {
+                    "W": False,
+                    "S": True,
+                    "A": True,
+                    "D": True,
+                }
+        elif key[pygame.K_a]:
+            if dirs["A"]:
+                dx, dy = 1, 0
+                dirs = {
+                    "W": True,
+                    "S": True,
+                    "A": True,
+                    "D": False,
+                }
+        elif key[pygame.K_d]:
+            if dirs["D"]:
+                dx, dy = -1, 0
+                dirs = {
+                    "W": True,
+                    "S": True,
+                    "A": False,
+                    "D": True,
+                }
+
